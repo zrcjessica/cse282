@@ -32,9 +32,7 @@ def reconstructString(k,patterns):
             dbGraph[curr_v].remove(next_v)
         else:
             epath.insert(0,curr_path.pop())
-    string = epath[0]
-    for i in range(1,len(epath)):
-        string += epath[i][-1]
+    string = reconstructFromPath(epath)
     return string
 
 def main():
