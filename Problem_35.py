@@ -6,13 +6,16 @@ def arg_parse():
     parser.add_argument('output', help='output filehandle')
     return parser.parse_args()
 
-def deBruijnKmer(patterns):
+def parseInput(fh):
     graph = {}
-    for kmer in patterns:
-        prefix = kmer[:-1]
-        suffix = kmer[1:]
-        graph.setdefault(prefix,[]).append(suffix)
-    return graph
+    lines = []
+    with open(fh) as infile:
+        lines = infile.read().splitlines()
+    for row in lines:
+        inNode, outNodes = row.split(' -> ')
+        outNodes_list = outNodes.split(',')
+        graph[inNode] = outNodes_list
+    return(graph)
 
 def nonBranching(graph,v):
     keys = list(graph.keys())
@@ -41,16 +44,11 @@ def isolatedCycles(graph):
                 currCycle.append(w)
                 w = graph[w][0]
             if nonBranching(graph,w) and w == currCycle[0]:
+                currCycle.append(w)
                 isolatedCycles.append(currCycle)
                 foundCycles = set(currCycle)
                 currCycle = []
     return isolatedCycles
-
-def reconstructFromPath(patterns):
-    text = patterns.pop(0)
-    for kmer in patterns:
-        text += kmer[-1]
-    return text
 
 def maxNonBranchingPaths(graph):
     paths = []
@@ -73,25 +71,16 @@ def maxNonBranchingPaths(graph):
                     w = u
                 paths.append(nonBranchPath)
     for each in isolatedCycles(graph):
-        paths.append(each)
+            paths.append(each)
     return paths
-       
-def genContigs(patterns):
-    dbGraph = deBruijnKmer(patterns)
-    paths = maxNonBranchingPaths(dbGraph)
-    contigs = []
-    for each in paths:
-        contigs.append(reconstructFromPath(each))
-    return contigs
 
 def main():
     args = arg_parse()
 
-    data = []
-    with open(args.input) as infile:
-        data = infile.read().splitlines()
-    
+    data = parseInput(args.input)
+
     with open(args.output,'w') as outfile:
-        outfile.write(' '.join(genContigs(data)))
+        for each in maxNonBranchingPaths(data):
+            outfile.write(' -> '.join(each)+'\n')
 
 main()
