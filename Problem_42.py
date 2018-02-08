@@ -37,16 +37,12 @@ def parsePAM():
 def localAlignment(str1,str2):
     aa, pam = parsePAM()
     SIGMA = -5 
-    out_str1, out_str2 = '',''
+    out_str1,out_str2 = '',''
     d = {}
     m,n = len(str1),len(str2)
     s = [[0]*(n+1) for row in range(m+1)]
     max_val = -float('inf')
     max_coord = -1,-1
-    for i in range(1,m+1):
-        s[i][0] = SIGMA*i
-    for j in range(1,n+1):
-        s[0][j] = SIGMA*j
     for j in range(1,n+1):
         for i in range(1,m+1):
             mismatch = pam[aa.index(str1[i-1])][aa.index(str2[j-1])]
@@ -69,7 +65,7 @@ def localAlignment(str1,str2):
         out_str2 += edges[1]
         curr = prev
     return s[m][n], out_str1[::-1], out_str2[::-1]
-
+    
 def main():
     args = arg_parse()
 
