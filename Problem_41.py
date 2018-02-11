@@ -61,9 +61,15 @@ def globalAlignment(str1,str2):
         out_str1 += edge[0]
         out_str2 += edge[1]
         curr = prev
-    if curr[0]!=0 or curr[1]!=0:
-        out_str1 += [str1[0],'-'][int(curr[0]==0)]
-        out_str2 += [str2[0],'-'][int(curr[1]==0)]
+    stop = list(curr)
+    while stop[0]>0:
+        out_str1 += [str1[stop[0]-1],'-'][int(stop[0]==0)]
+        out_str2 += '-'
+        stop[0] += -1
+    while stop[1]>0:
+        out_str2 += [str2[stop[1]-1],'-'][int(stop[1]==0)]
+        out_str1 += '-'
+        stop[1] += -1
     return s[m][n],out_str1[::-1],out_str2[::-1]
 
 def main():
